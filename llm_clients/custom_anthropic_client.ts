@@ -27,7 +27,7 @@ export class CustomAnthropicClient extends LLMClient {
   public constructor({ modelName, baseURL }: { modelName: string; baseURL: string }) {
     super(modelName as AvailableModel);
     this.modelName = modelName;
-    this.client = new Anthropic({ baseURL, apiKey: 'sk-dummy' })
+    this.client = new Anthropic({ baseURL, apiKey: process.env.ANTHROPIC_API_KEY || 'sk-dummy' })
   }
 
   public async createChatCompletion<T = LLMResponse & {
