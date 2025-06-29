@@ -36,16 +36,17 @@ async function main({
   await page.act("Click the search box");
 
   // Use observe() to plan an action before doing it
-  const [action] = await page.observe(
-    "Type 'Tell me in one sentence why I should use Stagehand' into the search box",
-  );
-  await drawObserveOverlay(page, [action]); // Highlight the search box
-  await page.waitForTimeout(1_000);
-  await clearOverlays(page); // Remove the highlight before typing
-  await page.act(action); // Take the action
+  // const [action] = await page.observe(
+  //   "Type 'Tell me in one sentence why I should use Stagehand' into the search box",
+  // );
+  // await drawObserveOverlay(page, [action]); // Highlight the search box
+  // await page.waitForTimeout(1_000);
+  // await clearOverlays(page); // Remove the highlight before typing
+  // await page.act(action); // Take the action
+  await page.act("Type 'Tell me in one sentence why I should use Stagehand' into the search box");
 
   // For more on caching, check out our docs: https://docs.stagehand.dev/examples/caching
-  await page.waitForTimeout(1_000);
+  // await page.waitForTimeout(1_000);
   await actWithCache(page, "Click the suggestion to use AI");
   await page.waitForTimeout(5_000);
 

@@ -9,29 +9,28 @@ const StagehandConfig: ConstructorParams = {
   domSettleTimeoutMs: 30_000 /* Timeout for DOM to settle in milliseconds */,
 
   // LLM configuration
-  // modelName: "anthropic/claude-opus-4-20250514" /* Name of the model to use */,
+  // modelName: "anthropic/claude-sonnet-4-20250514" /* Name of the model to use */,
   llmClient: new CustomAnthropicClient({
     // modelName: "claude-opus-4-20250514",
-    modelName: "claude-sonnet-4-20250514",
-    baseURL: "http://localhost:5789",
+    modelName: process.env.MODEL_NAME || "claude-sonnet-4-20250514",
+    baseURL: process.env.BASE_URL || "http://localhost:5789",
   }),
 
   // Browser configuration
   env: "LOCAL" /* Environment to run in: LOCAL or BROWSERBASE */,
-  apiKey: process.env.BROWSERBASE_API_KEY /* API key for authentication */,
-  projectId: process.env.BROWSERBASE_PROJECT_ID /* Project identifier */,
-  browserbaseSessionID:
-    undefined /* Session ID for resuming Browserbase sessions */,
-  browserbaseSessionCreateParams: {
-    projectId: process.env.BROWSERBASE_PROJECT_ID!,
-    browserSettings: {
-      blockAds: true,
-      viewport: {
-        width: 1024,
-        height: 768,
-      },
-    },
-  },
+  // apiKey: process.env.BROWSERBASE_API_KEY /* API key for authentication */,
+  // projectId: process.env.BROWSERBASE_PROJECT_ID /* Project identifier */,
+  // browserbaseSessionID: undefined /* Session ID for resuming Browserbase sessions */,
+  // browserbaseSessionCreateParams: {
+  //   projectId: process.env.BROWSERBASE_PROJECT_ID!,
+  //   browserSettings: {
+  //     blockAds: true,
+  //     viewport: {
+  //       width: 1024,
+  //       height: 768,
+  //     },
+  //   },
+  // },
   localBrowserLaunchOptions: {
     viewport: {
       width: 1024,
