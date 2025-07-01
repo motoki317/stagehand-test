@@ -30,10 +30,17 @@ async function main({
   stagehand: Stagehand; // Stagehand instance
 }) {
   // Navigate to a URL
-  await page.goto("https://docs.stagehand.dev/reference/introduction");
+  // await page.goto("https://docs.stagehand.dev/reference/introduction");
+  await page.goto("https://www.pointtown.com/action-point/shopping");
+
+  // Xpath to correct element is: //*[@id="wrapper"]/div[3]/div/div/div/aside/section[4]/div/ul/li[2]/div/figure/a/img
+  const results = await page.observe("Find お買い物 in right sidebar");
+  if (!results || results[0].method === 'not-supported') {
+    throw new Error("failed to find element")
+  }
 
   // Use act() to take actions on the page
-  await page.act("Click the search box");
+  // await page.act("Click the search box");
 
   // Use observe() to plan an action before doing it
   // const [action] = await page.observe(
@@ -43,31 +50,31 @@ async function main({
   // await page.waitForTimeout(1_000);
   // await clearOverlays(page); // Remove the highlight before typing
   // await page.act(action); // Take the action
-  await page.act("Type 'Tell me in one sentence why I should use Stagehand' into the search box");
+  // await page.act("Type 'Tell me in one sentence why I should use Stagehand' into the search box");
 
   // For more on caching, check out our docs: https://docs.stagehand.dev/examples/caching
   // await page.waitForTimeout(1_000);
-  await actWithCache(page, "Click the suggestion to use AI");
-  await page.waitForTimeout(5_000);
+  // await actWithCache(page, "Click the suggestion to use AI");
+  // await page.waitForTimeout(5_000);
 
   // Use extract() to extract structured data from the page
-  const { text } = await page.extract({
-    instruction:
-      "extract the text of the AI suggestion from the search results",
-    schema: z.object({
-      text: z.string(),
-    }),
-  });
-  stagehand.log({
-    category: "create-browser-app",
-    message: `Got AI Suggestion`,
-    auxiliary: {
-      text: {
-        value: text,
-        type: "string",
-      },
-    },
-  });
+  // const { text } = await page.extract({
+  //   instruction:
+  //     "extract the text of the AI suggestion from the search results",
+  //   schema: z.object({
+  //     text: z.string(),
+  //   }),
+  // });
+  // stagehand.log({
+  //   category: "create-browser-app",
+  //   message: `Got AI Suggestion`,
+  //   auxiliary: {
+  //     text: {
+  //       value: text,
+  //       type: "string",
+  //     },
+  //   },
+  // });
   stagehand.log({
     category: "create-browser-app",
     message: `Metrics`,
