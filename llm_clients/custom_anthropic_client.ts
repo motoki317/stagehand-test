@@ -124,12 +124,64 @@ export class CustomAnthropicClient extends LLMClient {
       ...(anthropicToolChoice && { tool_choice: anthropicToolChoice })
     });
     
+    // Debug logging
+    if (response_model) {
+      console.log('[CustomAnthropicClient] Response model requested:', response_model.name);
+      console.log('[CustomAnthropicClient] Message content:', JSON.stringify(msg.content, null, 2));
+    }
+    
     // If response_model was used, extract the structured data from tool calls
-    if (response_model && msg.content.some(block => block.type === 'tool_use')) {
+    if (response_model) {
       const toolUseBlock = msg.content.find(block => block.type === 'tool_use') as any;
-      if (toolUseBlock) {
+      
+      if (toolUseBlock && toolUseBlock.input) {
+        // Ensure the data is properly structured
+        const structuredData = toolUseBlock.input;
+        
+        // Validate that elements array exists and has proper structure
+        if (structuredData.elements && Array.isArray(structuredData.elements)) {
+          // Ensure each element has required fields
+          structuredData.elements = structuredData.elements.map((elem: any) => {
+            // Log the elementId for debugging
+            console.log('[CustomAnthropicClient] Processing element with ID:', elem.elementId);
+            
+            // Fix element ID format if needed
+            let elementId = elem.elementId || '';
+            
+            // Check if the ID has the wrong format (e.g., "1097-1099" instead of "0-1099")
+            if (elementId && elementId.includes('-')) {
+              const parts = elementId.split('-');
+              if (parts.length > 2 || (parts.length === 2 && !parts[0].match(/^\d+$/))) {
+                // Keep the original format
+              } else if (parts.length === 2 && parts[0] !== '0') {
+                // Convert "1097-1099" to "0-1099" format
+                console.log('[CustomAnthropicClient] Converting element ID from', elementId, 'to', `0-${parts[1]}`);
+                elementId = `0-${parts[1]}`;
+              }
+            }
+            
+            return {
+              elementId: elementId,
+              description: elem.description || '',
+              ...(elem.method && { method: elem.method }),
+              ...(elem.arguments && { arguments: elem.arguments })
+            };
+          });
+        }
+        
         return {
-          data: toolUseBlock.input,
+          data: structuredData,
+          usage: {
+            prompt_tokens: msg.usage.input_tokens,
+            completion_tokens: msg.usage.output_tokens,
+            total_tokens: msg.usage.input_tokens + msg.usage.output_tokens
+          }
+        } as T;
+      } else {
+        // Fallback: return empty structure if no tool was called
+        console.warn('[CustomAnthropicClient] No tool use block found in response, returning empty structure');
+        return {
+          data: { elements: [] },
           usage: {
             prompt_tokens: msg.usage.input_tokens,
             completion_tokens: msg.usage.output_tokens,
